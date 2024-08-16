@@ -53,7 +53,7 @@ function init() {
       console.error('Error accessing the webcam:', error);
     });
 
-  loadGLB('public/models/minime.glb')
+  loadGLB('models/minime.glb')
     .then(({ scene: modelScene, mixer: modelMixer }) => {
       modelScene.scale.set(2, 2, 2);
       modelScene.position.set(0, -1, 0); // Centered model
