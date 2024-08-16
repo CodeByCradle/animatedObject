@@ -8,6 +8,7 @@ function init() {
   const renderer = new THREE.WebGLRenderer({ alpha: true });
 
   let mixer;
+  const clock = new THREE.Clock();
 
   // Set the renderer's clear color to transparent
   renderer.setClearColor(0x000000, 0);
@@ -35,19 +36,21 @@ function init() {
   navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }) // Back camera on mobile
     .then((stream) => {
       video.srcObject = stream;
-
+      video.onloadedmetadata = () => {
+      const videoAspect = video.videoWidth / video.videoHeight;
       const videoTexture = new THREE.VideoTexture(video);
       videoTexture.minFilter = THREE.LinearFilter;
       videoTexture.magFilter = THREE.LinearFilter;
-      videoTexture.format = THREE.RGBFormat;
+      videoTexture.format = THREE.RGBAFormat;
 
       const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-      const videoPlaneGeometry = new THREE.PlaneGeometry(16, 9);
+      const videoPlaneGeometry = new THREE.PlaneGeometry(videoAspect * 9, 9);
       const videoPlane = new THREE.Mesh(videoPlaneGeometry, videoMaterial);
       videoPlane.scale.set(1.5, 1.5, 1.5); // Adjust scale as necessary
       videoPlane.renderOrder = 0; // Ensure this renders first
       videoPlane.position.z = -1; // Move the video plane slightly behind the model
       scene.add(videoPlane);
+    };
     })
     .catch((error) => {
       console.error('Error accessing the webcam:', error);
@@ -101,7 +104,7 @@ function init() {
     renderer.render(scene, camera);
   }
 
-  const clock = new THREE.Clock();
+  
 
   function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
